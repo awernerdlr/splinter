@@ -113,6 +113,7 @@ public:
      * Setters
      */
     void setControlPoints(const DenseMatrix &newControlPoints);
+    void setKnotVectors(const std::vector<std::vector<double> > & knots);
     void checkControlPoints() const;
 
     // Linear transformation of control points (B-spline has affine invariance)

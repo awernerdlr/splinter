@@ -73,6 +73,7 @@ public:
     {
         targetNumBasisfunctions = std::max(degree+1, target);
     }
+    void setKnotVector(const std::vector<double> & knots, bool check_knots=false);
 
 private:
     // DeBoorCox algorithm for evaluating basis functions

@@ -509,6 +509,15 @@ SparseMatrix BSplineBasis1D::reduceSupport(double lb, double ub)
     return Ad.sparseView();
 }
 
+void BSplineBasis1D::setKnotVector(const std::vector<double> & knots, bool check_knots) {
+    if(knots.size()!=this->knots.size())
+        throw std::runtime_error("Changing knot count is not allowed");
+    this->knots = knots;
+    if (check_knots && !isKnotVectorRegular(knots, degree))
+        throw Exception("BSplineBasis1D::BSplineBasis1D: Knot vector is not regular.");
+
+}
+
 unsigned int BSplineBasis1D::getNumBasisFunctions() const
 {
     return knots.size() - (degree + 1);

@@ -417,4 +417,8 @@ std::string BSpline::getDescription() const
     return description;
 }
 
+void BSpline::setKnotVectors(const std::vector<std::vector<double> > & knots) {
+    basis.setKnotVectors(knots);
+}
+
 } // namespace SPLINTER
