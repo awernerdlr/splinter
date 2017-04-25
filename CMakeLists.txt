@@ -264,10 +264,17 @@ install(
 install(
     DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/include/
-    ${EIGEN_DIRECTORY}/Eigen
-    ${EIGEN_DIRECTORY}/unsupported
     DESTINATION ${HEADER_INSTALL_DIRECTORY}/SPLINTER
 )
+# install Eigen headers if included ones are used
+if(${EIGEN_DIRECTORY} STREQUAL ${DEFAULT_EIGEN_DIRECTORY})
+    install(
+        DIRECTORY
+        ${EIGEN_DIRECTORY}/Eigen
+        ${EIGEN_DIRECTORY}/unsupported
+        DESTINATION ${HEADER_INSTALL_DIRECTORY}/SPLINTER
+    )
+endif(STREQUAL(${EIGEN_DIRECTORY},${DEFAULT_EIGEN_DIRECTORY}))
 # Install the shared library file
 install(
     TARGETS ${SHARED_LIBRARY}
