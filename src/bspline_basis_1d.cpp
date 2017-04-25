@@ -159,7 +159,7 @@ SparseVector BSplineBasis1D::evalKnotDerivative(double x, int r) const
     
     supportHack(x);
 
-    std::vector<int> supportedBasisFunctions = indexSupportedBasisfunctions(x);
+    std::vector<unsigned int> supportedBasisFunctions = indexSupportedBasisFunctions(x);
 
     for (int i : supportedBasisFunctions)
     {
@@ -525,11 +525,9 @@ SparseMatrix BSplineBasis1D::reduceSupport(double lb, double ub)
     return Ad.sparseView();
 }
 
-void BSplineBasis1D::setKnotVector(const std::vector<double> & knots, bool check_knots) {
-    if(knots.size()!=this->knots.size())
-        throw std::runtime_error("Changing knot count is not allowed");
+void BSplineBasis1D::setKnots(const KnotVector & knots) {
     this->knots = knots;
-    if (check_knots && !isKnotVectorRegular(knots, degree))
+    if (!this->knots.is_regular(degree))
         throw Exception("BSplineBasis1D::BSplineBasis1D: Knot vector is not regular.");
 
 }

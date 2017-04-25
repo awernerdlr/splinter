@@ -423,8 +423,8 @@ void BSpline::setKnotVectors(const std::vector<std::vector<double> > & knots) {
     
 double BSpline::evalPartialDerivative(DenseVector x,
         std::size_t dim, std::size_t order) const {
-    static DenseVector r(coefficients.size());
-    r = evalBasisPartialDerivative(x,dim,order).transpose() * coefficients;
+    static DenseVector r(controlPoints.cols());
+    r = evalBasisPartialDerivative(x,dim,order).transpose() * controlPoints;
     return r(0);
 }
     

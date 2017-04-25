@@ -56,7 +56,7 @@ public:
     /**
      * Getters
      */
-    std::vector<double> getKnotVector() const { return knots.get_values(); }
+    KnotVector getKnots() const { return knots; }
     unsigned int getBasisDegree() const { return degree; }
     unsigned int getNumBasisFunctions() const;
     unsigned int getNumBasisFunctionsTarget() const;
@@ -74,7 +74,7 @@ public:
     {
         targetNumBasisfunctions = std::max(degree+1, target);
     }
-    void setKnotVector(const std::vector<double> & knots, bool check_knots=false);
+    void setKnots(const KnotVector & knots);
 
 private:
     // DeBoorCox algorithm for evaluating basis functions

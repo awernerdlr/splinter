@@ -382,14 +382,14 @@ BSplineBasis1D BSplineBasis::getSingleBasis(unsigned int dim) const
 
 std::vector<double> BSplineBasis::getKnotVector(int dim) const
 {
-    return bases.at(dim).getKnotVector();
+    return bases.at(dim).getKnots().get_values();
 }
 
 std::vector< std::vector<double> > BSplineBasis::getKnotVectors() const
 {
     std::vector< std::vector<double> > knots;
     for (unsigned int i = 0; i < numVariables; i++)
-        knots.push_back(bases.at(i).getKnotVector());
+        knots.push_back(bases.at(i).getKnots().get_values());
     return knots;
 }
 
@@ -397,7 +397,7 @@ std::vector< std::vector<double> > BSplineBasis::getKnotVectors() const
 void BSplineBasis::setKnotVectors(std::vector< std::vector<double> > const & knots)
 {
     for (unsigned int i = 0; i < numVariables; i++)
-        bases.at(i).setKnotVector(knots.at(i));
+        bases.at(i).setKnots(knots.at(i));
 }
 
 unsigned int BSplineBasis::getKnotMultiplicity(unsigned int dim, double tau) const
@@ -442,7 +442,7 @@ std::vector<double> BSplineBasis::getSupportLowerBound() const
     std::vector<double> lb;
     for (unsigned int dim = 0; dim < numVariables; dim++)
     {
-        std::vector<double> knots = bases.at(dim).getKnotVector();
+        std::vector<double> knots = bases.at(dim).getKnots().get_values();
         lb.push_back(knots.front());
     }
     return lb;
@@ -453,7 +453,7 @@ std::vector<double> BSplineBasis::getSupportUpperBound() const
     std::vector<double> ub;
     for (unsigned int dim = 0; dim < numVariables; dim++)
     {
-        std::vector<double> knots = bases.at(dim).getKnotVector();
+        std::vector<double> knots = bases.at(dim).getKnots().get_values();
         ub.push_back(knots.back());
     }
     return ub;
