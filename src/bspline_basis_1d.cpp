@@ -152,6 +152,22 @@ SparseVector BSplineBasis1D::evalFirstDerivative(double x) const
 
     return values;
 }
+    
+SparseVector BSplineBasis1D::evalKnotDerivative(double x, int r) const
+{
+    SparseVector grad(knots.size());
+    
+    supportHack(x);
+
+    std::vector<int> supportedBasisFunctions = indexSupportedBasisfunctions(x);
+
+    for (int i : supportedBasisFunctions)
+    {
+        throw std::runtime_error("not implemented");
+    }
+
+    return grad;
+}
 
 // Used to evaluate basis functions - alternative to the recursive deBoorCox
 SparseMatrix BSplineBasis1D::buildBasisMatrix(double x, unsigned int u, unsigned int k, bool diff) const

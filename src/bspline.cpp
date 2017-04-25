@@ -433,4 +433,10 @@ SparseVector BSpline::evalBasisPartialDerivative(DenseVector x,
     return basis.getSingleBasis(dim).evalDerivative(x(dim),order);
 }
 
+SparseVector BSpline::evalKnotPartialDerivative(
+        DenseVector x, std::size_t dim, std::size_t order) const {
+    return basis.getSingleBasis(dim).evalKnotDerivative(x(dim),order);
+}
+
+
 } // namespace SPLINTER
