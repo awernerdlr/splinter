@@ -65,6 +65,7 @@ public:
      */
     std::vector<double> eval(const std::vector<double> &x) const override;
     DenseVector eval(const DenseVector &x) const override;
+    double evalPartialDerivative(DenseVector x, std::size_t dim, std::size_t order) const;
 
     /**
      * Returns the (dimY x dimX) Jacobian evaluated at x
@@ -79,6 +80,7 @@ public:
     // Evaluation of B-spline basis functions
     SparseVector evalBasis(const DenseVector &x) const;
     SparseMatrix evalBasisJacobian(const DenseVector &x) const;
+    SparseVector evalBasisPartialDerivative(DenseVector x, std::size_t dim, std::size_t order) const;
 
     /**
      * Getters

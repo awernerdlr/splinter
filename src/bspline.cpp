@@ -420,5 +420,17 @@ std::string BSpline::getDescription() const
 void BSpline::setKnotVectors(const std::vector<std::vector<double> > & knots) {
     basis.setKnotVectors(knots);
 }
+    
+double BSpline::evalPartialDerivative(DenseVector x,
+        std::size_t dim, std::size_t order) const {
+    static DenseVector r(coefficients.size());
+    r = evalBasisPartialDerivative(x,dim,order).transpose() * coefficients;
+    return r(0);
+}
+    
+SparseVector BSpline::evalBasisPartialDerivative(DenseVector x,
+        std::size_t dim, std::size_t order) const {
+    return basis.getSingleBasis(dim).evalDerivative(x(dim),order);
+}
 
 } // namespace SPLINTER

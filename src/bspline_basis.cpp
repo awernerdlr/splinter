@@ -375,7 +375,7 @@ unsigned int BSplineBasis::getNumBasisFunctions() const
     return prod;
 }
 
-BSplineBasis1D BSplineBasis::getSingleBasis(unsigned int dim)
+BSplineBasis1D BSplineBasis::getSingleBasis(unsigned int dim) const
 {
     return bases.at(dim);
 }

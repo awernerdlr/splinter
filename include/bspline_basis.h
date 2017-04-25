@@ -36,7 +36,7 @@ public:
     SparseMatrix insertKnots(double tau, unsigned int dim, unsigned int multiplicity = 1);
 
     // Getters
-    BSplineBasis1D getSingleBasis(unsigned int dim);
+    BSplineBasis1D getSingleBasis(unsigned int dim) const;
     std::vector<std::vector<double>> getKnotVectors() const;
     std::vector<double> getKnotVector(int dim) const;
 
