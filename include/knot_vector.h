@@ -18,6 +18,16 @@ namespace SPLINTER
 {
 
 /**
+ * Custom exception which can be specifically caught
+ */
+class KnotOrderException : public std::runtime_error {
+    public:
+        KnotOrderException(std::string const & msg):
+            std::runtime_error(msg){};
+        virtual ~KnotOrderException(){};
+};
+
+/**
  * Class representing a knot vector (nondecreasing sequence of number)
  */
 class KnotVector
@@ -33,7 +43,7 @@ public:
     {
         // Test knots here
         if (!is_nondecreasing())
-            throw Exception("KnotVector::KnotVector: Knot vector is not nondecreasing.");
+            throw KnotOrderException("KnotVector::KnotVector: Knot vector is not nondecreasing.");
     }
 
     std::vector<double> get_values() const {
