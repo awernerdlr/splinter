@@ -435,7 +435,10 @@ SparseVector BSpline::evalBasisPartialDerivative(DenseVector x,
 
 SparseVector BSpline::evalKnotPartialDerivative(
         DenseVector x, std::size_t dim, std::size_t order) const {
-    return basis.getSingleBasis(dim).evalKnotDerivative(x(dim),order);
+    SparseMatrix y(basis.getKnotVector(dim).size(),1);
+    y = basis.getSingleBasis(dim).evalKnotDerivative(x(dim),order).transpose()
+        * controlPoints.middleCols(dim,1);
+    return y.rightCols(1);
 }
 
 
