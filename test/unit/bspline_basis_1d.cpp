@@ -101,9 +101,9 @@ TEST_CASE("knotDerivatives" COMMON_TEXT, COMMON_TAGS)
     
     DenseMatrix delta_jac = jac - jac_ref;
     delta_jac = delta_jac.array().square();
-    std::cout << "analytic jacobian\n" << jac << std::endl;
-    std::cout << "numeric jacobian\n" << jac_ref << std::endl;
-    std::cout << "delta\n" << delta_jac << std::endl;
+    //std::cout << "analytic jacobian\n" << jac << std::endl;
+    //std::cout << "numeric jacobian\n" << jac_ref << std::endl;
+    //std::cout << "delta\n" << delta_jac << std::endl;
     for(int row=0;row<delta_jac.rows();row++)
         for(int col=0;col<delta_jac.cols();col++)
             REQUIRE(delta_jac(row,col) < 1e-3);
