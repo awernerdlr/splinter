@@ -153,20 +153,32 @@ SparseVector BSplineBasis1D::evalFirstDerivative(double x) const
     return values;
 }
     
-SparseVector BSplineBasis1D::evalKnotDerivative(double x, int r) const
+SparseMatrix BSplineBasis1D::evalKnotDerivative(double x, int r) const
 {
-    SparseVector grad(knots.size());
+    SparseMatrix jac(getNumBasisFunctions(),knots.size());
     
-    supportHack(x);
+    if (!is_supported(x))
+        return jac;
+    
+    x = supportHack(x);
 
-    std::vector<unsigned int> supportedBasisFunctions = indexSupportedBasisFunctions(x);
+    std::vector<unsigned int> indexSupported = indexSupportedBasisFunctions(x);
 
-    for (int i : supportedBasisFunctions)
+    jac.reserve(indexSupported.size()*getBasisDegree()); // TODO: enough?
+
+    for (int i : indexSupported)
     {
-        throw std::runtime_error("not implemented");
+        SparseVector grad = deBoorCoxKnotDerivative(x, i, degree);
+        std::cout << "basis " << i << "\n" << grad << std::endl;
+        for (SparseVector::InnerIterator it(grad); it; ++it)
+        {
+            jac.insert(i,it.index()) = it.value();
+        }
     }
+    
+    jac.makeCompressed();
 
-    return grad;
+    return jac;
 }
 
 // Used to evaluate basis functions - alternative to the recursive deBoorCox
@@ -228,6 +240,44 @@ SparseMatrix BSplineBasis1D::buildBasisMatrix(double x, unsigned int u, unsigned
     return R;
 }
 
+SparseVector BSplineBasis1D::deBoorCoxKnotDerivative(
+        double x, unsigned int i, unsigned int k) const {
+    SparseVector grad(knots.size());
+    if (k == 0)
+    {
+        return grad;
+    }
+    else
+    {
+        double s1 = deBoorCoxCoeff(x, knots.at(i),   knots.at(i+k));
+        double s2 = deBoorCoxCoeff(x, knots.at(i+1), knots.at(i+k+1));
+        SparseVector S1 = deBoorCoxCoeffKnotDerivative(x, i,   i+k);
+        SparseVector S2 = deBoorCoxCoeffKnotDerivative(x, i+1, i+k+1);
+
+        double r1 = deBoorCox(x, i,   k-1);
+        double r2 = deBoorCox(x, i+1, k-1);
+        SparseVector R1 = deBoorCoxKnotDerivative(x, i,   k-1);
+        SparseVector R2 = deBoorCoxKnotDerivative(x, i+1, k-1);
+
+        //return s1*r1 + (1-s2)*r2; -> product rule:
+        grad = S1*r1 + s1 * R1;
+        grad += - S2 * r2 + (1-s2) * R2;
+        std::cout << "deBoorCoxKnotDerivative(i=" << i << ",k=" << k << ")" << std::endl;
+        std::cout << "== recursive grad == \n"
+            << "s1: " << s1 << std::endl
+            << "s2: " << s2 << std::endl
+            << "r1: " << r1 << std::endl
+            << "r2: " << r2 << std::endl
+            << "S1: " << S1 << std::endl
+            << "S2: " << S2 << std::endl
+            << "R1: " << R1 << std::endl
+            << "R2: " << R2 << std::endl;
+        std::cout << "recursive grad\n" << grad << std::endl;
+        grad.prune(1e-12);
+        return grad;
+    }
+}
+
 double BSplineBasis1D::deBoorCox(double x, unsigned int i, unsigned int k) const
 {
     if (k == 0)
@@ -256,6 +306,22 @@ double BSplineBasis1D::deBoorCoxCoeff(double x, double x_min, double x_max) cons
     if (x_min < x_max && x_min <= x && x <= x_max)
         return (x - x_min)/(x_max - x_min);
     return 0;
+}
+
+SparseVector BSplineBasis1D::deBoorCoxCoeffKnotDerivative(
+        double x, int x_min_idx, int x_max_idx) const
+{
+    double x_min = knots.at(x_min_idx);
+    double x_max = knots.at(x_max_idx);
+    SparseVector grad(knots.size());
+    if (x_min < x_max && x_min <= x && x <= x_max)
+    {
+        grad.insert(x_min_idx) =
+            (x - x_min)/std::pow(x_max-x_min,2.) - 1./(x_max - x_min);
+        grad.insert(x_max_idx) =
+            - (x - x_min)/std::pow(x_max-x_min,2.);
+    }
+    return grad;
 }
 
 // Insert knots and compute knot insertion matrix (to update control points)

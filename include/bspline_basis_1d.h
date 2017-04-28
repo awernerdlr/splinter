@@ -37,7 +37,7 @@ public:
     SparseMatrix decomposeToBezierForm();
     SparseMatrix insertKnots(double tau, unsigned int multiplicity = 1);
     // bool insertKnots(SparseMatrix &A, std::vector<tuple<double,int>> newKnots); // Add knots at several locations
-    SparseVector evalKnotDerivative(double x, int r) const;
+    SparseMatrix evalKnotDerivative(double x, int r) const;
 
     unsigned int knotMultiplicity(double tau) const {
         // Return the number of repetitions of tau in the knot vector
@@ -80,6 +80,11 @@ private:
     // DeBoorCox algorithm for evaluating basis functions
     double deBoorCox(double x, unsigned int i, unsigned int k) const;
     double deBoorCoxCoeff(double x, double x_min, double x_max) const;
+    
+    SparseVector deBoorCoxKnotDerivative(
+            double x, unsigned int i, unsigned int k) const;
+    SparseVector deBoorCoxCoeffKnotDerivative(
+        double x, int x_min_idx, int x_max_idx) const;
 
     // Builds basis matrix for alternative evaluation of basis functions
     SparseMatrix buildBasisMatrix(double x, unsigned int u, unsigned int k, bool diff = false) const;

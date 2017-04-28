@@ -81,6 +81,8 @@ public:
     SparseVector evalBasis(const DenseVector &x) const;
     SparseMatrix evalBasisJacobian(const DenseVector &x) const;
     SparseVector evalBasisPartialDerivative(DenseVector x, std::size_t dim, std::size_t order) const;
+    SparseVector deBoorCoxKnotDerivative(
+        double x, unsigned int i, unsigned int k) const;
     SparseVector evalKnotPartialDerivative(DenseVector x, std::size_t dim, std::size_t order) const;
 
 
