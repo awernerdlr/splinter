@@ -114,6 +114,7 @@ SparseVector BSplineBasis1D::evalDerivative(double x, int r) const
     SparseVector DB(getNumBasisFunctions());
     DB.reserve(p+1);
     int i = knotIndex-p; // First insertion index
+    if(i<0)throw std::domain_error("Evaluating of basis function out of fully supported domain");
     for (int k = 0; k < B.outerSize(); ++k)
     for (SparseMatrix::InnerIterator it(B,k); it; ++it)
     {

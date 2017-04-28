@@ -108,3 +108,11 @@ TEST_CASE("knotDerivatives" COMMON_TEXT, COMMON_TAGS)
         for(int col=0;col<delta_jac.cols();col++)
             REQUIRE(delta_jac(row,col) < 1e-3);
 }
+
+TEST_CASE("derivative_regression" COMMON_TEXT, COMMON_TAGS)
+{
+    std::vector<double> knots = {-0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5 };
+    BSplineBasis1D bb(knots, 3);
+
+    REQUIRE_THROWS(bb.evalDerivative(1e-9,0));
+}
