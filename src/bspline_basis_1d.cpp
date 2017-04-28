@@ -169,7 +169,6 @@ SparseMatrix BSplineBasis1D::evalKnotDerivative(double x, int r) const
     for (int i : indexSupported)
     {
         SparseVector grad = deBoorCoxKnotDerivative(x, i, degree);
-        std::cout << "basis " << i << "\n" << grad << std::endl;
         for (SparseVector::InnerIterator it(grad); it; ++it)
         {
             jac.insert(i,it.index()) = it.value();
@@ -262,17 +261,6 @@ SparseVector BSplineBasis1D::deBoorCoxKnotDerivative(
         //return s1*r1 + (1-s2)*r2; -> product rule:
         grad = S1*r1 + s1 * R1;
         grad += - S2 * r2 + (1-s2) * R2;
-        std::cout << "deBoorCoxKnotDerivative(i=" << i << ",k=" << k << ")" << std::endl;
-        std::cout << "== recursive grad == \n"
-            << "s1: " << s1 << std::endl
-            << "s2: " << s2 << std::endl
-            << "r1: " << r1 << std::endl
-            << "r2: " << r2 << std::endl
-            << "S1: " << S1 << std::endl
-            << "S2: " << S2 << std::endl
-            << "R1: " << R1 << std::endl
-            << "R2: " << R2 << std::endl;
-        std::cout << "recursive grad\n" << grad << std::endl;
         grad.prune(1e-12);
         return grad;
     }
