@@ -430,7 +430,7 @@ double BSpline::evalPartialDerivative(DenseVector x,
     
 SparseVector BSpline::evalBasisPartialDerivative(DenseVector x,
         std::size_t dim, std::size_t order) const {
-    return basis.getSingleBasis(dim).evalDerivative(x(dim),order);
+    return basis.getSingleBasis(dim).evalDerivativedeBoorCox(x(dim),order);
 }
 
 SparseVector BSpline::evalKnotPartialDerivative(
