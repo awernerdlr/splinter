@@ -153,7 +153,46 @@ SparseVector BSplineBasis1D::evalFirstDerivative(double x) const
 
     return values;
 }
+
+SparseVector BSplineBasis1D::evalDerivativedeBoorCox(
+        double x, unsigned int r) const {
+    SparseVector values(getNumBasisFunctions());
+
+    x = supportHack(x);
+
+    auto supportedBasisFunctions = indexSupportedBasisFunctions(x);
+
+    for (auto i : supportedBasisFunctions)
+    {
+        values.insert(i) = 
+            evalDerivativedeBoorCoxSingleBasis(x,i,degree,r);
+    }
+
+    return values;
+}
+
+double BSplineBasis1D::evalDerivativedeBoorCoxSingleBasis(
+        double x, int i, int k, unsigned int r) const
+{
+    if ( r == 0 )
+        return deBoorCox(x,i,k);
     
+    // Differentiate basis function
+    // Equation 3.35 in Lyche & Moerken (2011)
+    double b1 = evalDerivativedeBoorCoxSingleBasis(x, i, k-1, r-1);
+    double b2 = evalDerivativedeBoorCoxSingleBasis(x, i+1, k-1, r-1);
+
+    double t11 = knots.at(i);
+    double t12 = knots.at(i+k);
+    double t21 = knots.at(i+1);
+    double t22 = knots.at(i+k+1);
+
+    (t12 == t11) ? b1 = 0 : b1 = b1/(t12-t11);
+    (t22 == t21) ? b2 = 0 : b2 = b2/(t22-t21);
+
+    return k * (b1 - b2);
+}
+
 SparseMatrix BSplineBasis1D::evalKnotDerivative(double x, int r) const
 {
     SparseMatrix jac(getNumBasisFunctions(),knots.size());

@@ -28,6 +28,7 @@ public:
     SparseVector eval(double x) const;
     SparseVector evalDerivative(double x, int r) const;
     SparseVector evalFirstDerivative(double x) const; // TODO: Deprecated
+    SparseVector evalDerivativedeBoorCox(double x, unsigned int r) const;
 
     /**
      * Knot vector related
@@ -80,6 +81,8 @@ private:
     // DeBoorCox algorithm for evaluating basis functions
     double deBoorCox(double x, unsigned int i, unsigned int k) const;
     double deBoorCoxCoeff(double x, double x_min, double x_max) const;
+    double evalDerivativedeBoorCoxSingleBasis(
+        double x, int i, int k, unsigned int r) const;
     
     SparseVector deBoorCoxKnotDerivative(
             double x, unsigned int i, unsigned int k) const;

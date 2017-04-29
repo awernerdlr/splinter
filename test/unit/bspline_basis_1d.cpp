@@ -81,6 +81,18 @@ TEST_CASE("indexSupportedBasisFunctions" COMMON_TEXT, COMMON_TAGS)
     }
 }
 
+TEST_CASE("evalDerivativedeBoorCox" COMMON_TEXT, COMMON_TAGS)
+{
+    std::vector<double> knots = {1, 1, 1, 2.1, 3.1, 4, 4, 4};
+    BSplineBasis1D bb(knots, 3);
+    for(int derivative : {0,1,2}) {
+        DenseVector d1 = bb.evalDerivative(2.1,derivative);
+        DenseVector d2 = bb.evalDerivativedeBoorCox(2.1,derivative);
+        for(int idx=0;idx<d1.size();idx++)
+            REQUIRE(d1(idx)==Approx(d2(idx)));
+    }
+}
+
 TEST_CASE("knotDerivatives" COMMON_TEXT, COMMON_TAGS)
 {
     std::vector<double> knots = {1, 1.1, 1.2, 2.1, 3.1, 4, 4.1, 4.2};
