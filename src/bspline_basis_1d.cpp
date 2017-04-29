@@ -76,7 +76,7 @@ SparseVector BSplineBasis1D::evalDerivative(double x, int r) const
     int p = degree;
 
     // Continuity requirement
-    if (p < r)
+    if (p < r || !is_supported(x))
     {
         // Return zero-gradient
         SparseVector DB(getNumBasisFunctions());
@@ -193,6 +193,57 @@ double BSplineBasis1D::evalDerivativedeBoorCoxSingleBasis(
     return k * (b1 - b2);
 }
 
+/**
+ * Implements time derivatives for knot vector derivatives in a
+ * recursive manner. 
+ */
+SparseVector BSplineBasis1D::evalKnotDerivativeSingleBasis(double x, int r,
+        int i, unsigned int k) const
+{
+    if ( r == 0 )
+        return deBoorCoxKnotDerivative(x, i, k);
+        
+    // handle higher derivatives using 
+    // Equation 3.35 in Lyche & Moerken (2011)
+    // recursively
+
+    // test code for r==1
+    // for r>1 call evalKnotDerivative(x,r-1) and put it in here
+    double b1 = evalDerivativedeBoorCoxSingleBasis(x, i, k-1, r-1);
+    SparseVector B1 = evalKnotDerivativeSingleBasis(x, r-1, i, k-1);
+    double b2 = evalDerivativedeBoorCoxSingleBasis(x, i+1, k-1, r-1);
+    SparseVector B2 = evalKnotDerivativeSingleBasis(x, r-1, i+1, k-1);
+
+    double t11 = knots.at(i);
+    double t12 = knots.at(i+k);
+    double t21 = knots.at(i+1);
+    double t22 = knots.at(i+k+1);
+    
+    //(t12 == t11) ? b1 = 0 : b1 = b1/(t12-t11);
+    if(t12 == t11)
+    {
+        B1.setZero();
+    }
+    else
+    {
+        B1 /= (t12-t11);
+        B1.coeffRef(i) += b1/std::pow(t12-t11,2);
+        B1.coeffRef(i+k) += - b1/std::pow(t12-t11,2);
+    }
+    //(t22 == t21) ? b2 = 0 : b2 = b2/(t22-t21);
+    if(t22 == t21)
+    {
+        B2.setZero();
+    }
+    else
+    {
+        B2 /= (t22-t21);
+        B2.coeffRef(i+1) += b2/std::pow(t22-t21,2);
+        B2.coeffRef(i+k+1) += - b2/std::pow(t22-t21,2);
+    }
+    return k * (B1 - B2);
+}
+
 SparseMatrix BSplineBasis1D::evalKnotDerivative(double x, int r) const
 {
     SparseMatrix jac(getNumBasisFunctions(),knots.size());
@@ -208,7 +259,7 @@ SparseMatrix BSplineBasis1D::evalKnotDerivative(double x, int r) const
 
     for (int i : indexSupported)
     {
-        SparseVector grad = deBoorCoxKnotDerivative(x, i, degree);
+        SparseVector grad = evalKnotDerivativeSingleBasis(x,r,i,degree);
         for (SparseVector::InnerIterator it(grad); it; ++it)
         {
             jac.insert(i,it.index()) = it.value();

@@ -98,27 +98,30 @@ TEST_CASE("knotDerivatives" COMMON_TEXT, COMMON_TAGS)
     std::vector<double> knots = {1, 1.1, 1.2, 2.1, 3.1, 4, 4.1, 4.2};
     BSplineBasis1D bb(knots, 2);
     double x = 2.2;
-    SparseMatrix jac = bb.evalKnotDerivative(x,0);
-    
-    SparseMatrix jac_ref(jac.rows(),jac.cols());
-    double delta = 1e-6;
-    SparseVector center = bb.eval(x);
-    for(std::size_t knot_idx=0;knot_idx<knots.size();knot_idx++) {
-        std::vector<double> perturbed_knots(knots);
-        perturbed_knots.at(knot_idx) += delta;
-        bb.setKnots(perturbed_knots);
-        SparseVector perturbed = bb.eval(x);
-        jac_ref.middleCols(knot_idx,1) = (perturbed - center)/delta;
+
+    for(int derivative : {0,1,2})
+    {
+        SparseMatrix jac = bb.evalKnotDerivative(x,derivative);
+        SparseMatrix jac_ref(jac.rows(),jac.cols());
+        double delta = 1e-6;
+        SparseVector center = bb.evalDerivative(x,derivative);
+        for(std::size_t knot_idx=0;knot_idx<knots.size();knot_idx++) {
+            std::vector<double> perturbed_knots(knots);
+            perturbed_knots.at(knot_idx) += delta;
+            bb.setKnots(perturbed_knots);
+            SparseVector perturbed = bb.evalDerivative(x,derivative);
+            jac_ref.middleCols(knot_idx,1) = (perturbed - center)/delta;
+        }
+        
+        DenseMatrix delta_jac = jac - jac_ref;
+        delta_jac = delta_jac.array().square();
+        std::cout << "analytic jacobian\n" << jac << std::endl;
+        std::cout << "numeric jacobian\n" << jac_ref << std::endl;
+        std::cout << "delta\n" << delta_jac << std::endl;
+        for(int row=0;row<delta_jac.rows();row++)
+            for(int col=0;col<delta_jac.cols();col++)
+                REQUIRE(delta_jac(row,col) < 1e-3);
     }
-    
-    DenseMatrix delta_jac = jac - jac_ref;
-    delta_jac = delta_jac.array().square();
-    //std::cout << "analytic jacobian\n" << jac << std::endl;
-    //std::cout << "numeric jacobian\n" << jac_ref << std::endl;
-    //std::cout << "delta\n" << delta_jac << std::endl;
-    for(int row=0;row<delta_jac.rows();row++)
-        for(int col=0;col<delta_jac.cols();col++)
-            REQUIRE(delta_jac(row,col) < 1e-3);
 }
 
 TEST_CASE("derivative_regression" COMMON_TEXT, COMMON_TAGS)

@@ -88,6 +88,8 @@ private:
             double x, unsigned int i, unsigned int k) const;
     SparseVector deBoorCoxCoeffKnotDerivative(
         double x, int x_min_idx, int x_max_idx) const;
+    SparseVector evalKnotDerivativeSingleBasis(double x, int r,
+        int i, unsigned int k) const;
 
     // Builds basis matrix for alternative evaluation of basis functions
     SparseMatrix buildBasisMatrix(double x, unsigned int u, unsigned int k, bool diff = false) const;
