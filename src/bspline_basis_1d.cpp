@@ -673,7 +673,7 @@ SparseMatrix BSplineBasis1D::reduceSupport(double lb, double ub)
 void BSplineBasis1D::setKnots(const KnotVector & knots) {
     this->knots = knots;
     if (!this->knots.is_regular(degree))
-        throw Exception("BSplineBasis1D::BSplineBasis1D: Knot vector is not regular.");
+        throw KnotOrderException("BSplineBasis1D::BSplineBasis1D: Knot vector is not regular.");
 
 }
 
