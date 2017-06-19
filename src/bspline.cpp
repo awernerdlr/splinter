@@ -435,10 +435,16 @@ SparseVector BSpline::evalBasisPartialDerivative(DenseVector x,
 
 SparseVector BSpline::evalKnotPartialDerivative(
         DenseVector x, std::size_t dim, std::size_t order) const {
-    SparseMatrix y(basis.getKnotVector(dim).size(),1);
-    y = basis.getSingleBasis(dim).evalKnotDerivative(x(dim),order).transpose()
-        * controlPoints.middleCols(dim,1);
-    return y.rightCols(1);
+    SparseMatrix jac = 
+        basis.getSingleBasis(dim).evalKnotDerivative(x(dim),order);
+    SparseVector y(jac.rows());
+    // manual multiplication to keep sparsity pattern
+    for (int k=0; k<jac.outerSize(); ++k) {
+        for (SparseMatrix::InnerIterator it(jac,k); it; ++it) {
+            y.coeffRef(it.col()) += it.value() * controlPoints(it.row(),dim);
+        }
+    }
+    return y;
 }
 
 
